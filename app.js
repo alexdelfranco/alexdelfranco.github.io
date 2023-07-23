@@ -235,15 +235,17 @@ const fgStarDrag = d3.drag()
 
 // A function to be called on the dragging of a star
 function handleFgStarDrag(e) {
+	// Set vertical dragging limits
 	if (e.y <= svg1Params['height']/2 - (starParams['size']*Math.cos(Math.PI/5))
 		&& e.y >= -svg1Params['height']/2 + starParams['size']) {
 		e.subject.cy = e.y
 	}
-	if (e.x <= 2*svg1Params['width']/8
+	// Set horizontal
+	if (e.x <= 3*svg1Params['width']/8
 		&& e.x >= -2*svg1Params['width']/8) {
 		e.subject.cx = e.x
 	}
-
+	// Update stars
 	updateFgStars();
 	updateFgPanelStars();
 }
