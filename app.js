@@ -1,15 +1,15 @@
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 
-// ----------------------------------------
+// -----------------------------------------------------------------------------
 // 		SETUP THE BODY
-// ----------------------------------------
+// -----------------------------------------------------------------------------
 
 const body = d3.select('body')
-	.style('background-color','CornflowerBlue')
+	.style('background-color','#70A7FF')
 
-// ----------------------------------------
+// -----------------------------------------------------------------------------
 // 		SETUP THE TITLE
-// ----------------------------------------
+// -----------------------------------------------------------------------------
 
 // Add a title to the page
 const title = d3.create('h1')
@@ -23,14 +23,14 @@ const title = d3.create('h1')
 // Append the title and the svg element to the DOM
 container.append(title.node());
 
-// ----------------------------------------
+// -----------------------------------------------------------------------------
 // 		SETUP THE SVG ELEMENT
-// ----------------------------------------
+// -----------------------------------------------------------------------------
 
 // Declare the svg1 dimensions
 const svg1Params = {
-	width: 1200,
-	height: 400,
+	width: 900,
+	height: 300,
 	'y-margin': '30px'
 };
 
@@ -42,12 +42,13 @@ const svg1 = d3.create('svg')
 	// Center and outline the svg element
 	.style('margin', `${svg1Params['y-margin']} auto`)
 	.style("display", "block")
-	.style('outline', 'thick solid grey')
+	.style('outline', 'thick solid #2176FF')
+	.style('background','#33A1FD')
 	;
 
-// ----------------------------------------
+// -----------------------------------------------------------------------------
 // 		SETUP THE SOLAR SYSTEM
-// ----------------------------------------
+// -----------------------------------------------------------------------------
 
 // Create a series of parameters to control the Solar System
 const solarSystemParams = {
@@ -75,9 +76,9 @@ const solarSystem = svg1.append('g')
 // Append the title and the svg element to the DOM
 container.append(svg1.node());
 
-// ----------------------------------------
+// -----------------------------------------------------------------------------
 // 		POPULATE THE SOLAR SYSTEM
-// ----------------------------------------
+// -----------------------------------------------------------------------------
 
 // Add a Sun to the solar system
 const sun = solarSystem.append('circle')
@@ -104,9 +105,9 @@ const earth = solarSystem.append('circle')
 	.attr('transform',`translate(0,${-solarSystemParams['rOrbit']})`)
 	;
 
-// ----------------------------------------
+// -----------------------------------------------------------------------------
 // 		MAKE EARTH INTERACTIVE
-// ----------------------------------------
+// -----------------------------------------------------------------------------
 
 // Instantiate a drag module
 const earthDrag = d3.drag()
@@ -142,9 +143,9 @@ function initEarthDrag() {
 	earth.call(earthDrag)
 }
 
-// ----------------------------------------
+// -----------------------------------------------------------------------------
 // 		SETUP THE STARS
-// ----------------------------------------
+// -----------------------------------------------------------------------------
 
 //  Create a series of parameters to control the stars
 const starParams = {
@@ -155,11 +156,11 @@ const starParams = {
 	size: 20,
 	panelSize: 50,
 	bkgStars: [
-		{i: 0, cy: -160},
-		{i: 1, cy: -120},
+		{i: 0, cy: -100},
+		{i: 1, cy: -80},
 		{i: 2, cy: -10},
 		{i: 3, cy: 50},
-		{i: 4, cy: 170}],
+		{i: 4, cy: 120}],
 	fgStars: [
 		{i: 0, cx: 100, cy: 10, color: 'red'},
 		{i: 1, cx: -80, cy: -80, color: 'green'},
@@ -216,9 +217,9 @@ function initBkgStarDrag() {
 		.call(bkgStarDrag)
 }
 
-// ----------------------------------------
+// -----------------------------------------------------------------------------
 // 		SETUP THE FOREGROUND STARS
-// ----------------------------------------
+// -----------------------------------------------------------------------------
 
 // Add the stars to the svg element
 const fgStars = svg1.append('g')
@@ -268,13 +269,13 @@ function initFgStarDrag() {
 		.call(fgStarDrag)
 }
 
-// ----------------------------------------
+// -----------------------------------------------------------------------------
 // 		SETUP THE VIEWING PANEL
-// ----------------------------------------
+// -----------------------------------------------------------------------------
 
 // Declare the svg1 dimensions
 const svg2Params = {
-	width: 1200,
+	width: svg1Params.width,
 	height: 200
 };
 
@@ -286,15 +287,16 @@ const svg2 = d3.create('svg')
 	// Center and outline the svg element
 	.style('margin', '0 auto')
 	.style("display", "block")
-	.style('outline', 'thick solid grey')
+	.style('outline', 'thick solid #2176FF')
+	.style('background','#33A1FD')
 	;
 
 // Append the title and the svg element to the DOM
 container.append(svg2.node());
 
-// ----------------------------------------
+// -----------------------------------------------------------------------------
 // 		SETUP THE BACKGROUND PANEL STARS
-// ----------------------------------------
+// -----------------------------------------------------------------------------
 
 const bkgStarsPanel = svg2.append('g')
 	.attr('id','panelBkgStars')
@@ -315,9 +317,9 @@ function updateBkgPanelStars() {
 		;
 }
 
-// ----------------------------------------
+// -----------------------------------------------------------------------------
 // 		SETUP THE FOREGROUND PANEL STARS
-// ----------------------------------------
+// -----------------------------------------------------------------------------
 
 const fgStarsPanel = svg2.append('g')
 	.attr('id','panelFgStars')
@@ -346,9 +348,9 @@ function updateFgPanelStars() {
 		;
 }
 
-// ----------------------------------------
+// -----------------------------------------------------------------------------
 // 		ACTIVATE DRAGGING ABILITIES
-// ----------------------------------------
+// -----------------------------------------------------------------------------
 
 // Let earth be drag friendly
 initEarthDrag()
@@ -376,3 +378,75 @@ setupStars(d3.select('#panelBkgStars').selectAll('circle'),starParams.panelSize)
 updateFgPanelStars();
 // Setup background panel stars
 setupStars(d3.select('#panelFgStars').selectAll('circle'),starParams.panelSize)
+
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+// 		ANIMATION
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+
+// Animation function
+function animate({timing, draw, duration}) {
+
+	// Request the start time
+	let start = performance.now();
+
+	// Request a single frame of animation from the window at the current time
+	requestAnimationFrame(function animate(time) {
+
+		// Define timeFraction such that it ranges from 0 to 1
+		let timeFraction = (time - start) / duration;
+		// If timeFraction surpasses 1, reset it to 1
+		if (timeFraction > 1) timeFraction = 1;
+		// classalculate the current animation state
+		let progress = timing(timeFraction)
+		// Draw the current state
+		draw(progress);
+		// As long as timeFraction is less than 1, continue the animation
+		if (timeFraction < 1) {
+			// Continue the animation
+			requestAnimationFrame(animate);
+		}
+	})
+};
+
+// Setup an animation
+const rotateEarth = {
+	// Timing function, i.e. how fast should time increase
+	timing(timeFraction) {return timeFraction},
+	// What happens at each frame
+	draw(progress) {
+		solarSystemParams['earthAngle'] = (progress * 2 * Math.PI)
+		updateEarth();
+		updateFgPanelStars();
+		console.log(solarSystemParams['earthAngle'])
+	},
+	// Duration of the animation (in milliseconds)
+	duration: 2000
+};
+
+// -----------------------------------------------------------------------------
+// 		CREATE ANIMATION CONTROLS
+// -----------------------------------------------------------------------------
+
+const controls = document.createElement('DIV')
+controls.id = 'controls'
+const earthButton = document.createElement("BUTTON");
+earthButton.id = 'earthButton'
+controls.appendChild(earthButton)
+
+document.body.append(controls);
+
+earthButton.addEventListener('click',() => {
+	animate(rotateEarth);
+	earthButton.addEventListener('click',animate(rotateEarth))
+})
+
+d3.select('#controls')
+	.style('text-align','center')
+	.style('margin','20px auto')
+	;
+
+
+d3.select('#earthButton')
+	.text('Rotate!')
