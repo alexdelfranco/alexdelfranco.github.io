@@ -475,6 +475,27 @@ function setupControls() {
 		;
 }
 
+function formatButton(d3Object,color) {
+	d3Object.style('background-color',color)
+		.style('border','none')
+		.style('color','white')
+		.style('padding','15px 32px')
+		.style('text-align','center')
+		.style('text-decoration','none')
+		.style('display','inline-block')
+		.style('font-size','16px')
+	// 	.style('border','none')
+	// .style
+	// background-color: #4CAF50; /* Green */
+  // : none;
+  // color: white;
+  // padding: 15px 32px;
+  // text-align: center;
+  // text-decoration: none;
+  // display: inline-block;
+  // font-size: 16px;
+}
+
 // Append the controls panel to the body
 document.body.append(controls);
 
@@ -543,4 +564,6 @@ xAxisButton.onclick = () => {
 // 		SETUP CONTROLS
 // -----------------------------------------------------------------------------
 
+formatButton(d3.select('#xAxisButton'),'#4CAF50')
+formatButton(d3.select('#earthButton'),'red')
 setupControls()
