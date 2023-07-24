@@ -298,7 +298,7 @@ function initFgStarDrag() {
 
 svgParams.svg2 = {
 	width: svgParams.svg1.width,
-	height: 300
+	height: 150
 }
 
 // Create the svg holder for the main solarSystem elements
