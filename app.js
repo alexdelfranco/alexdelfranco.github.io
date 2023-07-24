@@ -1,5 +1,70 @@
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 
+// Declare the svg dimensions
+const svgParams = {
+	svg1: {
+		width: 900,
+		height: 300,
+		'y-margin': 30
+	}
+};
+
+// Create a series of parameters to control the Solar System
+const solarSystemParams = {
+	'center-x': svgParams.svg1.width/8,
+	'center-y': svgParams.svg1.height/2,
+	sun: {
+		radius: 20
+	},
+	earth: {
+		radius: 6,
+		angle: Math.PI/2
+	},
+	orbit: {
+		radius: 80
+	}
+};
+
+//  Create a series of parameters to control the stars
+const starParams = {
+	'bkgCenter-x': svgParams.svg1.width * (7/8),
+	'bkgCenter-y': svgParams.svg1.height / 2,
+	'fgCenter-x': svgParams.svg1.width / 2,
+	'fgCenter-y': svgParams.svg1.height / 2,
+	size: 20,
+	panelSize: 50,
+	bkgStars: [
+		// Index, yCenter
+		{i: 0, cy: -100},
+		{i: 1, cy: -80},
+		{i: 2, cy: -10},
+		{i: 3, cy: 50},
+		{i: 4, cy: 120}],
+	fgStars: [
+		// Index, xCenter, yCenter, color
+		{i: 0, cx: 100, cy: 10, color: 'red'},
+		{i: 1, cx: -80, cy: -80, color: 'green'},
+	]
+};
+
+const buttonParams = {
+	rotation: {
+		// Is the object currently rotating
+		active: false,
+		// In milliseconds
+		duration: 2000,
+		// Animation ID
+		globalID: '',
+		// Initial earth angle
+		initAngle: 0
+	},
+	xaxis: {
+		// Visible
+		visible: false
+	}
+}
+
+
 // -----------------------------------------------------------------------------
 // 		SETUP THE BODY
 // -----------------------------------------------------------------------------
@@ -27,20 +92,13 @@ container.append(title.node());
 // 		SETUP THE SVG ELEMENT
 // -----------------------------------------------------------------------------
 
-// Declare the svg1 dimensions
-const svg1Params = {
-	width: 900,
-	height: 300,
-	'y-margin': '30px'
-};
-
 // Create the svg holder for the main solarSystem elements
 const svg1 = d3.create('svg')
 	.attr('id','localBubble')
-	.attr('width',svg1Params['width'])
-	.attr('height',svg1Params['height'])
-	// Center and outline the svg element
-	.style('margin', `${svg1Params['y-margin']} auto`)
+	.attr('width',svgParams.svg1.width)
+	.attr('height',svgParams.svg1.height)
+	// Center ]and outline the svg element
+	.style('margin', `${svgParams.svg1['y-margin']} auto`)
 	.style("display", "block")
 	.style('outline', 'thick solid #2176FF')
 	.style('background','#33A1FD')
@@ -49,23 +107,6 @@ const svg1 = d3.create('svg')
 // -----------------------------------------------------------------------------
 // 		SETUP THE SOLAR SYSTEM
 // -----------------------------------------------------------------------------
-
-// Create a series of parameters to control the Solar System
-const solarSystemParams = {
-	'center-x': svg1Params['width']/8,
-	'center-y': svg1Params['height']/2,
-	rSun: 20,
-	rOrbit: 80,
-	rEarth: 6,
-	earthAngle: Math.PI/2
-};
-
-// Create a series of parameters to control objects within the Solar System
-const solarSystemObjects = [
-	{name: 'Sun', radius: 20},
-	{name: 'Earth', radius: 6},
-	{name: 'Orbit', radius: 40}
-]
 
 // Append a solar system
 const solarSystem = svg1.append('g')
@@ -83,14 +124,14 @@ container.append(svg1.node());
 // Add a Sun to the solar system
 const sun = solarSystem.append('circle')
 	.attr('id','sun')
-	.attr('r',solarSystemParams['rSun'])
+	.attr('r',solarSystemParams.sun.radius)
 	.style('fill','orange')
 	;
 
 // Add the orbit of the earth to the solar system
 const orbit = solarSystem.append('circle')
 	.attr('id','orbit')
-	.attr('r',solarSystemParams['rOrbit'])
+	.attr('r',solarSystemParams.orbit.radius)
 	.style('fill','none')
 	.style('border-radius','50%')
 	.style('stroke','black')
@@ -100,9 +141,9 @@ const orbit = solarSystem.append('circle')
 // Add the earth to the solar system
 const earth = solarSystem.append('circle')
 	.attr('id','earth')
-	.attr('r',solarSystemParams['rEarth'])
+	.attr('r',solarSystemParams.earth.radius)
 	.style('fill','blue')
-	.attr('transform',`translate(0,${-solarSystemParams['rOrbit']})`)
+	.attr('transform',`translate(0,${-solarSystemParams.orbit.radius})`)
 	;
 
 // -----------------------------------------------------------------------------
@@ -126,16 +167,16 @@ function handleEarthDrag(e) {
 		angle = Math.atan(-e.y/e.x)
 	}
 	// Save the angle and update earth
-	solarSystemParams['earthAngle'] = angle
+	solarSystemParams.earth.angle = angle
 	updateEarth();
 	updateFgPanelStars();
 }
 
 // A funciton to specify how earth moves while being dragged
 function updateEarth() {
-	let angle = solarSystemParams['earthAngle']
-	earth.attr('cx',solarSystemParams['rOrbit']*Math.cos(angle))
-	earth.attr('cy',-solarSystemParams['rOrbit']*Math.sin(angle)+solarSystemParams['rOrbit'])
+	let angle = solarSystemParams.earth.angle
+	earth.attr('cx',solarSystemParams.orbit.radius*Math.cos(angle))
+	earth.attr('cy',-solarSystemParams.orbit.radius*Math.sin(angle)+solarSystemParams.orbit.radius)
 }
 
 // A function to initialze the drag ability of earth
@@ -146,26 +187,6 @@ function initEarthDrag() {
 // -----------------------------------------------------------------------------
 // 		SETUP THE STARS
 // -----------------------------------------------------------------------------
-
-//  Create a series of parameters to control the stars
-const starParams = {
-	'bkgCenter-x': 7*svg1Params['width']/8,
-	'bkgCenter-y': svg1Params['height']/2,
-	'fgCenter-x': svg1Params['width']/2,
-	'fgCenter-y': svg1Params['height']/2,
-	size: 20,
-	panelSize: 50,
-	bkgStars: [
-		{i: 0, cy: -100},
-		{i: 1, cy: -80},
-		{i: 2, cy: -10},
-		{i: 3, cy: 50},
-		{i: 4, cy: 120}],
-	fgStars: [
-		{i: 0, cx: 100, cy: 10, color: 'red'},
-		{i: 1, cx: -80, cy: -80, color: 'green'},
-	]
-};
 
 // Add the stars to the svg element
 const bkgStars = svg1.append('g')
@@ -181,8 +202,8 @@ const bkgStarDrag = d3.drag()
 
 // A function to be called on the dragging of a star
 function handleBkgStarDrag(e) {
-	if (e.y <= svg1Params['height']/2 - (starParams['size']*Math.cos(Math.PI/5))
-		&& e.y >= -svg1Params['height']/2 + starParams['size']) {
+	if (e.y <= svgParams.svg1.height/2 - (starParams.size * Math.cos(Math.PI/5))
+		&& e.y >= -svgParams.svg1.height/2 + starParams.size) {
 		e.subject.cy = e.y
 	}
 	updateBkgStars();
@@ -193,7 +214,7 @@ function updateBkgStars() {
 	// Data join stars from bkgStarData
 	d3.select('#bkgStarGroup')
 		.selectAll('circle')
-		.data(starParams['bkgStars'])
+		.data(starParams.bkgStars)
 		.join('circle')
 		.style('id','bkgStar')
 		.style('fill','yellow')
@@ -236,13 +257,13 @@ const fgStarDrag = d3.drag()
 // A function to be called on the dragging of a star
 function handleFgStarDrag(e) {
 	// Set vertical dragging limits
-	if (e.y <= svg1Params['height']/2 - (starParams['size']*Math.cos(Math.PI/5))
-		&& e.y >= -svg1Params['height']/2 + starParams['size']) {
+	if (e.y <= svgParams.svg1.height/2 - (starParams.size * Math.cos(Math.PI/5))
+		&& e.y >= -svgParams.svg1.height/2 + starParams.size) {
 		e.subject.cy = e.y
 	}
 	// Set horizontal
-	if (e.x <= 3*svg1Params['width']/8
-		&& e.x >= -2*svg1Params['width']/8) {
+	if (e.x <= 3*svgParams.svg1.width/8
+		&& e.x >= -2*svgParams.svg1.width/8) {
 		e.subject.cx = e.x
 	}
 	// Update stars
@@ -254,7 +275,7 @@ function updateFgStars() {
 	// Data join stars from bkgStarData
 	d3.select('#fgStarGroup')
 		.selectAll('circle')
-		.data(starParams['fgStars'])
+		.data(starParams.fgStars)
 		.join('circle')
 		.style('id','fgStar')
 		// Arrange the stars
@@ -275,17 +296,16 @@ function initFgStarDrag() {
 // 		SETUP THE VIEWING PANEL
 // -----------------------------------------------------------------------------
 
-// Declare the svg1 dimensions
-const svg2Params = {
-	width: svg1Params.width,
-	height: 200
-};
+svgParams.svg2 = {
+	width: svgParams.svg1.width,
+	height: 300
+}
 
 // Create the svg holder for the main solarSystem elements
 const svg2 = d3.create('svg')
 	.attr('id','viewingPanel')
-	.attr('width',svg2Params['width'])
-	.attr('height',svg2Params['height'])
+	.attr('width',svgParams.svg2.width)
+	.attr('height',svgParams.svg2.height)
 	// Center and outline the svg element
 	.style('margin', '0 auto')
 	.style("display", "block")
@@ -297,12 +317,36 @@ const svg2 = d3.create('svg')
 container.append(svg2.node());
 
 // -----------------------------------------------------------------------------
+// 		PANEL AXES
+// -----------------------------------------------------------------------------
+
+// Create the xaxis scale
+const xscale = d3.scaleLinear().domain([0, 60]).range([0, svgParams.svg1.width+2]);
+
+// // Creat the xaxis
+// const xAxisObject = d3.axisTop(xscale)
+// 	.tickValues([5,10,15,20,25,30,35,40,45,50,55])
+
+// Create the vertical axis lines
+const xAxisLinesObject = d3.axisBottom(xscale)
+	.tickValues([5,10,15,20,25,30,35,40,45,50,55])
+	.tickSize(svgParams.svg2.height-13)
+
+// Append the xaxis vertical lines
+const xAxisLines = svg2.append('g')
+	.call(xAxisLinesObject)
+	.attr('id','xAxisLines')
+	.attr('transform',`translate(-1,0)`)
+	.style("stroke-dasharray", ("3, 3"))
+	.style('visibility','hidden')
+
+// -----------------------------------------------------------------------------
 // 		SETUP THE BACKGROUND PANEL STARS
 // -----------------------------------------------------------------------------
 
 const bkgStarsPanel = svg2.append('g')
 	.attr('id','panelBkgStars')
-	.attr('transform',`translate(${svg2Params.width/2},${svg2Params.height/2})`)
+	.attr('transform',`translate(${svgParams.svg2.width/2},${svgParams.svg2.height/2})`)
 		// + starParams.panelSize * (1-Math.cos(Math.PI/5))/2 })`)
 	;
 
@@ -310,13 +354,12 @@ function updateBkgPanelStars() {
 	// Data join stars from bkgStarData
 	d3.select('#panelBkgStars')
 		.selectAll('circle')
-		.data(starParams['bkgStars'])
+		.data(starParams.bkgStars)
 		.join('circle')
 		.style('id','panelBkgStar')
 		// Arrange the stars
 		.attr('cx', (d,i) => {return 3*d.cy})
 		.style('fill', 'yellow')
-		;
 }
 
 // -----------------------------------------------------------------------------
@@ -325,7 +368,7 @@ function updateBkgPanelStars() {
 
 const fgStarsPanel = svg2.append('g')
 	.attr('id','panelFgStars')
-	.attr('transform',`translate(${svg2Params.width/2},${svg2Params.height/2 })`)
+	.attr('transform',`translate(${svgParams.svg2.width/2},${svgParams.svg2.height/2 })`)
 		// + starParams.panelSize * (1-Math.cos(Math.PI/5))/2 })`)
 	;
 
@@ -339,15 +382,14 @@ function updateFgPanelStars() {
 		// Arrange the stars
 		.attr('cx', (d,i) => {
 			// Calculate the position of earth
-			let ex = solarSystemParams.rOrbit * Math.cos(solarSystemParams.earthAngle)
-			let ey = solarSystemParams.rOrbit * Math.sin(solarSystemParams.earthAngle)
+			let ex = solarSystemParams.orbit.radius * Math.cos(solarSystemParams.earth.angle)
+			let ey = solarSystemParams.orbit.radius * Math.sin(solarSystemParams.earth.angle)
 			// Calculate teh slope from the earth to the selected star
-			let m = - (ey + d.cy) / ((d.cx + 3*svg1Params.width/8 - ex))
-			let y = m * (3*svg1Params.width/4-ex) + ey
+			let m = - (ey + d.cy) / ((d.cx + 3*svgParams.svg1.width/8 - ex))
+			let y = m * (3*svgParams.svg1.width/4-ex) + ey
 			return 3*y
 		})
 		.style('fill', (d,i) => {return d.color})
-		;
 }
 
 // -----------------------------------------------------------------------------
@@ -360,14 +402,14 @@ initEarthDrag()
 // Create background stars
 updateBkgStars();
 // Setup background stars
-setupStars(d3.select('#bkgStarGroup').selectAll('circle'),starParams['size'])
+setupStars(d3.select('#bkgStarGroup').selectAll('circle'),starParams.size)
 // Initialize background star dragging
 initBkgStarDrag();
 
 // Create foreground stars
 updateFgStars();
 // Setup foreground stars
-setupStars(d3.select('#fgStarGroup').selectAll('circle'),starParams['size'])
+setupStars(d3.select('#fgStarGroup').selectAll('circle'),starParams.size)
 // Initialize foreground star dragging
 initFgStarDrag();
 
@@ -387,68 +429,118 @@ setupStars(d3.select('#panelFgStars').selectAll('circle'),starParams.panelSize)
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 
-// Animation function
-function animate({timing, draw, duration}) {
-
+// General animation function
+function animate({draw, duration}) {
 	// Request the start time
 	let start = performance.now();
-
 	// Request a single frame of animation from the window at the current time
-	requestAnimationFrame(function animate(time) {
-
+	buttonParams.rotation.globalID = requestAnimationFrame(function animate(time) {
 		// Define timeFraction such that it ranges from 0 to 1
 		let timeFraction = (time - start) / duration;
-		// If timeFraction surpasses 1, reset it to 1
-		if (timeFraction > 1) timeFraction = 1;
-		// classalculate the current animation state
-		let progress = timing(timeFraction)
 		// Draw the current state
-		draw(progress);
-		// As long as timeFraction is less than 1, continue the animation
-		if (timeFraction < 1) {
-			// Continue the animation
-			requestAnimationFrame(animate);
-		}
+		draw(timeFraction);
+		// Request next animation frame
+		buttonParams.rotation.globalID = requestAnimationFrame(animate);
 	})
 };
 
 // Setup an animation
 const rotateEarth = {
-	// Timing function, i.e. how fast should time increase
-	timing(timeFraction) {return timeFraction},
 	// What happens at each frame
 	draw(progress) {
-		solarSystemParams['earthAngle'] = (progress * 2 * Math.PI)
+		if (!buttonParams.rotation.rotating) {
+			buttonParams.rotation.initAngle = solarSystemParams.earth.angle
+			buttonParams.rotation.rotating = true
+		}
+		solarSystemParams.earth.angle = (progress * 2 * Math.PI) + buttonParams.rotation.initAngle
 		updateEarth();
-		updateFgPanelStars();
-		console.log(solarSystemParams['earthAngle'])
-	},
+		updateFgPanelStars()},
 	// Duration of the animation (in milliseconds)
-	duration: 2000
+	duration: buttonParams.rotation.duration,
 };
 
 // -----------------------------------------------------------------------------
-// 		CREATE ANIMATION CONTROLS
+// 		CREATE GENERAL ANIMATION CONTROLS
 // -----------------------------------------------------------------------------
 
+// Create new div and give it an id
 const controls = document.createElement('DIV')
 controls.id = 'controls'
-const earthButton = document.createElement("BUTTON");
-earthButton.id = 'earthButton'
-controls.appendChild(earthButton)
 
+function setupControls() {
+	// Edit properties of controls
+	d3.select('#controls')
+		.style('text-align','center')
+		.style('margin','20px auto')
+		;
+}
+
+// Append the controls panel to the body
 document.body.append(controls);
 
-earthButton.addEventListener('click',() => {
-	animate(rotateEarth);
-	earthButton.addEventListener('click',animate(rotateEarth))
-})
+// -----------------------------------------------------------------------------
+// 		CREATE EARTH BUTTON
+// -----------------------------------------------------------------------------
 
-d3.select('#controls')
-	.style('text-align','center')
-	.style('margin','20px auto')
-	;
+// Create the rotation button and give it an id
+const earthButton = document.createElement("BUTTON");
+earthButton.id = 'earthButton'
+// Append the earth button to the controls panel
+controls.appendChild(earthButton)
 
-
+// Edit properties of earth button
 d3.select('#earthButton')
 	.text('Rotate!')
+
+// Setup earth button
+earthButton.onclick = () => {
+	// If currently rotating
+	if (buttonParams.rotation.rotating) {
+		cancelAnimationFrame(buttonParams.rotation.globalID)
+		buttonParams.rotation.rotating = false
+		// Edit properties of earth button
+		d3.select('#earthButton').text('Rotate!')
+	// If not currently rotating
+	} else {
+		animate(rotateEarth)
+		// Edit properties of earth button
+		d3.select('#earthButton').text('Stop Rotating!')
+	}
+}
+
+// -----------------------------------------------------------------------------
+// 		CREATE AXIS BUTTON
+// -----------------------------------------------------------------------------
+
+// Create the rotation button and give it an id
+const xAxisButton = document.createElement("BUTTON");
+xAxisButton.id = 'xAxisButton'
+// Append the earth button to the controls panel
+controls.appendChild(xAxisButton)
+
+// Edit properties of earth button
+d3.select('#xAxisButton')
+	.text('Show x-Axis')
+
+// Setup earth button
+xAxisButton.onclick = () => {
+	// If currently visible
+	if (buttonParams.xaxis.visible) {
+		buttonParams.xaxis.visible = false
+		// Edit properties of earth button
+		d3.select('#xAxisButton').text('Show x-Axis')
+		d3.select('#xAxisLines').style('visibility','hidden')
+	// If not currently visible
+	} else {
+		buttonParams.xaxis.visible = true
+		// Edit properties of earth button
+		d3.select('#xAxisButton').text('Hide x-Axis')
+		d3.select('#xAxisLines').style('visibility','visible')
+	}
+}
+
+// -----------------------------------------------------------------------------
+// 		SETUP CONTROLS
+// -----------------------------------------------------------------------------
+
+setupControls()
