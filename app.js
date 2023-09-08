@@ -27,11 +27,11 @@ const solarSystemParams = {
 
 //  Create a series of parameters to control the stars
 const starParams = {
-	'bkgCenter-x': svgParams.svg1.width * (7/8),
+	'bkgCenter-x': svgParams.svg1.width * (30/32),
 	'bkgCenter-y': svgParams.svg1.height / 2,
 	'fgCenter-x': svgParams.svg1.width / 2,
 	'fgCenter-y': svgParams.svg1.height / 2,
-	size: 20,
+	size: 18,
 	panelSize: 50,
 	bkgStars: [
 		// Index, yCenter
@@ -63,7 +63,6 @@ const buttonParams = {
 		visible: false
 	}
 }
-
 
 // -----------------------------------------------------------------------------
 // 		SETUP THE BODY
@@ -271,8 +270,9 @@ function handleFgStarDrag(e) {
 	updateFgPanelStars();
 }
 
+// Updates the draggable foreground stars
 function updateFgStars() {
-	// Data join stars from bkgStarData
+	// Data join stars from fgStarData
 	d3.select('#fgStarGroup')
 		.selectAll('circle')
 		.data(starParams.fgStars)
@@ -286,6 +286,7 @@ function updateFgStars() {
 		;
 }
 
+// Initializes the draggability of the foreground stars
 function initFgStarDrag() {
 	d3.select('#fgStarGroup')
 		.selectAll('circle')
@@ -384,10 +385,10 @@ function updateFgPanelStars() {
 			// Calculate the position of earth
 			let ex = solarSystemParams.orbit.radius * Math.cos(solarSystemParams.earth.angle)
 			let ey = solarSystemParams.orbit.radius * Math.sin(solarSystemParams.earth.angle)
-			// Calculate teh slope from the earth to the selected star
+			// Calculate the slope from the earth to the selected star
 			let m = - (ey + d.cy) / ((d.cx + 3*svgParams.svg1.width/8 - ex))
 			let y = m * (3*svgParams.svg1.width/4-ex) + ey
-			return 3*y
+			return -3*y
 		})
 		.style('fill', (d,i) => {return d.color})
 }
@@ -484,16 +485,7 @@ function formatButton(d3Object,color) {
 		.style('text-decoration','none')
 		.style('display','inline-block')
 		.style('font-size','16px')
-	// 	.style('border','none')
-	// .style
-	// background-color: #4CAF50; /* Green */
-  // : none;
-  // color: white;
-  // padding: 15px 32px;
-  // text-align: center;
-  // text-decoration: none;
-  // display: inline-block;
-  // font-size: 16px;
+		.style('margin','4px')
 }
 
 // Append the controls panel to the body
@@ -564,6 +556,9 @@ xAxisButton.onclick = () => {
 // 		SETUP CONTROLS
 // -----------------------------------------------------------------------------
 
+// Format buttons
 formatButton(d3.select('#xAxisButton'),'#4CAF50')
 formatButton(d3.select('#earthButton'),'red')
+
+// Setup the control panel
 setupControls()
