@@ -448,12 +448,12 @@ const rotateEarth = {
 // 		CREATE GENERAL ANIMATION CONTROLS
 // -----------------------------------------------------------------------------
 
-// const controls = document.createElement('DIV')
-// controls.id = 'controls'
+const controls = document.createElement('DIV')
+controls.id = 'controls'
 
-// Create new div and give it an id
-const controls = d3.create('div')
-	.attr('id','controls')
+// // Create new div and give it an id
+// const controls = d3.create('div')
+// 	.attr('id','controls')
 
 function setupControls() {
 	// Edit properties of controls
@@ -475,12 +475,8 @@ function formatButton(d3Object,color) {
 		.style('margin','4px')
 }
 
-// Append the title and the svg element to the DOM
-parallaxContainer.append(controls.node());
-
-
-// Append the controls panel to the body
-// document.body.append(controls);
+// Append the controls panel to the parallaxContainer
+parallaxContainer.append(controls);
 
 // -----------------------------------------------------------------------------
 // 		CREATE EARTH BUTTON
@@ -489,6 +485,7 @@ parallaxContainer.append(controls.node());
 // Create the rotation button and give it an id
 const earthButton = document.createElement("BUTTON");
 earthButton.id = 'earthButton'
+
 // Append the earth button to the controls panel
 controls.appendChild(earthButton)
 
