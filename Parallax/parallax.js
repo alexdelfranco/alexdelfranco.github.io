@@ -85,7 +85,7 @@ const title = d3.create('h1')
 	;
 
 // Append the title and the svg element to the DOM
-parallax-container.append(title.node());
+parallaxContainer.append(title.node());
 
 // -----------------------------------------------------------------------------
 // 		SETUP THE SVG ELEMENT
@@ -114,7 +114,7 @@ const solarSystem = svg1.append('g')
 	;
 
 // Append the title and the svg element to the DOM
-parallax-container.append(svg1.node());
+parallaxContainer.append(svg1.node());
 
 // -----------------------------------------------------------------------------
 // 		POPULATE THE SOLAR SYSTEM
@@ -315,7 +315,7 @@ const svg2 = d3.create('svg')
 	;
 
 // Append the title and the svg element to the DOM
-parallax-container.append(svg2.node());
+parallaxContainer.append(svg2.node());
 
 // -----------------------------------------------------------------------------
 // 		PANEL AXES
