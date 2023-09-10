@@ -43,7 +43,7 @@ const starParams = {
 	fgStars: [
 		// Index, xCenter, yCenter, color
 		{i: 0, cx: 100, cy: 10, color: 'red'},
-		{i: 1, cx: -80, cy: -80, color: 'green'},
+		{i: 1, cx: -80, cy: -80, color: 'yellow'},
 	]
 };
 
@@ -200,7 +200,7 @@ function updateBkgStars() {
 		.data(starParams.bkgStars)
 		.join('circle')
 		.style('id','bkgStar')
-		.style('fill','yellow')
+		.style('fill','grey')
 		// Arrange the stars
 		.attr('cy', (d,i) => {return d.cy})
 		.call(bkgStarDrag)
@@ -344,7 +344,7 @@ function updateBkgPanelStars() {
 		.style('id','panelBkgStar')
 		// Arrange the stars
 		.attr('cx', (d,i) => {return 3*d.cy})
-		.style('fill', 'yellow')
+		.style('fill', 'grey')
 }
 
 // -----------------------------------------------------------------------------
