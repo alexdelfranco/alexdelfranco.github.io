@@ -5,7 +5,7 @@ const svgParams = {
 	svg1: {
 		width: 900,
 		height: 300,
-		'y-margin': 30
+		'y-margin': 0
 	}
 };
 
