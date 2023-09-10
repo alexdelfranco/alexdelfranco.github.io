@@ -69,7 +69,7 @@ const buttonParams = {
 // -----------------------------------------------------------------------------
 
 const body = d3.select('body')
-	.style('background-color','#70A7FF')
+	// .style('background-color','#70A7FF')
 
 // -----------------------------------------------------------------------------
 // 		SETUP THE SVG ELEMENT
